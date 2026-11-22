@@ -1,0 +1,220 @@
+<mvc:View
+  controllerName="auditb1.controller.AuditWizard"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+  <Page title="Nueva auditoría de conteo" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <Wizard id="auditWizard" complete=".onWizardComplete" enableBranching="false">
+          <!-- Paso 1 -->
+          <WizardStep title="Almacén y documento" validated="{/step1Valid}">
+            <VBox class="auditStepHeader">
+              <Label text="Almacén" required="true"/>
+              <Select id="selWarehouse" forceSelection="false" change=".onWarehouseChange"
+                      items="{/warehouses}" width="100%">
+                <core:Item key="{WarehouseCode}" text="{WarehouseCode} — {WarehouseName}"/>
+              </Select>
+              <Label text="Documento de conteo (opcional)" class="sapUiSmallMarginTop"/>
+              <Select id="selCounting" forceSelection="false" change=".onCountingChange"
+                      items="{/countings}" width="100%" enabled="{= !!${/selectedWarehouse} }">
+                <core:Item key="{DocEntry}" text="{label}"/>
+              </Select>
+              <Text text="Puede dejarlo vacío o en «Sin documento» para contar la bodega tal como está."
+                    class="sapUiTinyMarginTop"/>
+              <ObjectStatus
+                class="sapUiSmallMarginTop"
+                text="{= ${session>/simulationMode} ? 'Datos de simulación' : 'Datos desde SAP B1' }"
+                state="{= ${session>/simulationMode} ? 'Warning' : 'Success' }"/>
+            </VBox>
+          </WizardStep>
+
+          <!-- Paso 2 -->
+          <WizardStep title="Validar ítems" validated="{/step2Valid}">
+            <VBox>
+              <HBox wrap="Wrap" alignItems="End" class="sapUiTinyMarginBottom">
+                <VBox class="sapUiTinyMarginEnd" width="16rem">
+                  <Label text="Buscar / escanear código o QR"/>
+                  <SearchField id="itemSearch" width="100%" placeholder="Código, barcode o nombre…"
+                               liveChange=".onFilterItems" search=".onScanBarcode"/>
+                </VBox>
+                <VBox class="sapUiTinyMarginEnd" width="14rem">
+                  <Label text="Escaner (Enter)"/>
+                  <Input id="barcodeInput" width="100%" placeholder="Pase el lector aquí"
+                         submit=".onScanBarcode" change=".onScanBarcode"/>
+                </VBox>
+              </HBox>
+
+              <Table id="itemsTable" items="{
+                  path: '/items',
+                  filters: []
+                }" mode="None" growing="true" growingThreshold="50"
+                     sticky="ColumnHeaders" class="sapUiTinyMarginTop">
+                <headerToolbar>
+                  <OverflowToolbar>
+                    <Title text="Ítems del conteo"/>
+                    <ToolbarSpacer/>
+                    <ObjectStatus
+                      text="{= 'Merma: ' + ${/totalMermaQty} + ' uds / $' + ${/totalMermaValue} }"
+                      state="{= ${/totalMermaQty} > 0 ? 'Error' : 'Success' }"
+                      class="sapUiTinyMarginEnd"/>
+                    <Button text="Cargar stock" icon="sap-icon://product" press=".onLoadStock" type="Emphasized"/>
+                    <Button text="Agregar ítem" icon="sap-icon://add" press=".onAddItem"/>
+                    <Button text="Actualizar stock" icon="sap-icon://refresh" press=".onRecalcStatus"
+                            tooltip="Trae stock y costo actual (SAP) y recalcula diferencias/merma"/>
+                  </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                  <Column width="12rem"><Text text="Artículo"/></Column>
+                  <Column width="6rem" minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline"><Text text="Barcode"/></Column>
+                  <Column width="5rem" hAlign="End"><Text text="Sist."/></Column>
+                  <Column width="5rem" hAlign="End"><Text text="Cont."/></Column>
+                  <Column width="4.5rem" hAlign="End"><Text text="Dif."/></Column>
+                  <Column width="5rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline"><Text text="Costo"/></Column>
+                  <Column width="5rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline"><Text text="Merma"/></Column>
+                  <Column width="6rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline"><Text text="$ Merma"/></Column>
+                  <Column width="8rem"><Text text="Estado"/></Column>
+                  <Column width="5rem" hAlign="Center" minScreenWidth="Phone" demandPopin="true"><Text text="Foto"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <VBox>
+                        <Input value="{item_name}" width="100%" placeholder="Nombre del artículo"/>
+                        <Input value="{item_code}" width="100%" placeholder="Código" class="sapUiTinyMarginTop"/>
+                      </VBox>
+                      <Input value="{barcode}" width="100%" placeholder="Barcode/QR"/>
+                      <Input value="{system_qty}" type="Number" change=".onQtyChange"/>
+                      <Input value="{counted_qty}" type="Number" change=".onQtyChange"/>
+                      <ObjectNumber number="{difference_qty}" state="{= ${status} === 'OK' ? 'Success' : 'Error' }"/>
+                      <ObjectNumber number="{unit_cost}" emphasized="{= ${unit_cost} > 0 }"/>
+                      <ObjectNumber number="{merma_qty}" state="{= ${merma_qty} > 0 ? 'Error' : 'None' }"/>
+                      <Text text="{= ${merma_qty} > 0 ? (${merma_value} > 0 ? ('$' + ${merma_value}) : 'Sin costo SAP') : '—' }"/>
+                      <Select selectedKey="{status}" change=".onStatusChange" width="100%">
+                        <core:Item key="OK" text="OK"/>
+                        <core:Item key="DIFERENCIA" text="Diferencia"/>
+                      </Select>
+                      <HBox alignItems="Center" justifyContent="Center">
+                        <Button icon="sap-icon://camera" tooltip="Foto y comentario" press=".onItemEvidence"
+                                type="{= ${photo_data} || ${notes} ? 'Emphasized' : 'Transparent' }"/>
+                        <core:Icon src="sap-icon://attachment" visible="{= !!${photo_data} }"
+                                   class="sapUiTinyMarginBegin" color="#0070F2"/>
+                        <core:Icon src="sap-icon://comment" visible="{= !!${notes} }"
+                                   class="sapUiTinyMarginBegin" color="#107e3e"/>
+                      </HBox>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+            </VBox>
+          </WizardStep>
+
+          <!-- Paso 3 -->
+          <WizardStep title="Evidencia visual" validated="true">
+            <VBox>
+              <Label text="Foto general de evidencia (cámara o archivo)"/>
+              <HBox class="sapUiTinyMarginBottom" wrap="Wrap">
+                <Button text="Tomar / subir foto" icon="sap-icon://camera" press=".onPickPhoto" class="sapUiTinyMarginEnd"/>
+                <Button text="Limpiar anotaciones" icon="sap-icon://eraser" press=".onClearAnnot" type="Transparent"/>
+              </HBox>
+              <html:input id="filePhoto" type="file" accept="image/*" capture="environment" style="display:none"/>
+              <core:HTML id="canvasHost" content=""/>
+              <Label text="Nota de observación general" class="sapUiSmallMarginTop"/>
+              <TextArea value="{/observation_note}" rows="3" width="100%"
+                        placeholder="Describa hallazgos generales de la auditoría…"/>
+            </VBox>
+          </WizardStep>
+
+          <!-- Paso 4 checklist -->
+          <WizardStep title="Checklist bodega" validated="{/stepChecklistValid}">
+            <VBox>
+              <Title text="{/checklistTemplate/name}" level="H5" visible="{= !!${/checklistTemplate} }"/>
+              <Text text="Complete el checklist antes de firmar." class="sapUiTinyMarginBottom"/>
+              <Table items="{/checklist}" growing="true">
+                <columns>
+                  <Column><Text text="Pregunta"/></Column>
+                  <Column width="8rem"><Text text="Respuesta"/></Column>
+                  <Column minScreenWidth="Tablet" demandPopin="true"><Text text="Nota"/></Column>
+                </columns>
+                <items>
+                  <ColumnListItem>
+                    <cells>
+                      <Text text="{= ${question} + (${required} ? ' *' : '') }" wrapping="true"/>
+                      <Select selectedKey="{answer}" change=".onChecklistChange" width="100%">
+                        <core:Item key="SI" text="SI"/>
+                        <core:Item key="NO" text="NO"/>
+                        <core:Item key="NA" text="N/A"/>
+                      </Select>
+                      <Input value="{comment}" placeholder="Opcional"/>
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+              <MessageStrip text="Las preguntas con * son obligatorias (responda SI o NO)."
+                            type="Information" showIcon="true" class="sapUiSmallMarginTop"
+                            visible="{= (${/checklist} || []).length > 0 }"/>
+            </VBox>
+          </WizardStep>
+
+          <!-- Paso 5 -->
+          <WizardStep title="Dictamen y firma" validated="{/step4Valid}">
+            <VBox>
+              <Label text="Dictamen general" required="true"/>
+              <Select selectedKey="{/verdict}" change=".onVerdictChange" width="100%">
+                <core:Item key="APROBADO" text="APROBADO"/>
+                <core:Item key="CON_OBSERVACION" text="CON OBSERVACIÓN"/>
+                <core:Item key="RECHAZADO" text="RECHAZADO"/>
+              </Select>
+              <Label text="Firma del auditor" required="true" class="sapUiSmallMarginTop"/>
+              <core:HTML id="signHost" content=""/>
+              <HBox class="sapUiTinyMarginTop">
+                <Button text="Limpiar firma" press=".onClearSign" type="Transparent"/>
+              </HBox>
+              <MessageStrip
+                text="Si usted es AUDITOR, el acta quedará pendiente de aprobación del supervisor antes de enviarse a SAP."
+                type="Information" showIcon="true" class="sapUiSmallMarginTop"/>
+            </VBox>
+          </WizardStep>
+        </Wizard>
+      </VBox>
+    </content>
+    <footer>
+      <OverflowToolbar>
+        <ToolbarSpacer/>
+        <Button text="Validar y Enviar" type="Emphasized" icon="sap-icon://accept"
+                press=".onSubmit" enabled="{/canSubmit}" busy="{/busy}"/>
+      </OverflowToolbar>
+    </footer>
+
+    <dependents>
+      <Dialog id="itemEvidenceDialog" title="Evidencia del ítem" stretchOnPhone="true">
+        <content>
+          <VBox class="sapUiSmallMargin">
+            <Text text="{/evidenceEdit/item_code} — {/evidenceEdit/item_name}" class="sapUiTinyMarginBottom"/>
+            <Label text="Comentario / observación del ítem"/>
+            <TextArea value="{/evidenceEdit/notes}" rows="4" width="100%"
+                      placeholder="Ej. ubicación, daño, lote, causa de diferencia…"/>
+            <Label text="Foto del ítem" class="sapUiSmallMarginTop"/>
+            <HBox class="sapUiTinyMarginBottom">
+              <Button text="Tomar / subir foto" icon="sap-icon://camera" press=".onPickItemPhoto"/>
+              <Button text="Quitar foto" type="Transparent" press=".onClearItemPhoto"
+                      visible="{= !!${/evidenceEdit/photo_data} }"/>
+            </HBox>
+            <html:input id="fileItemPhoto" type="file" accept="image/*" capture="environment" style="display:none"/>
+            <Image src="{/evidenceEdit/photo_data}" width="100%" densityAware="false"
+                   visible="{= !!${/evidenceEdit/photo_data} }"/>
+          </VBox>
+        </content>
+        <beginButton>
+          <Button text="Guardar" type="Emphasized" press=".onSaveItemEvidence"/>
+        </beginButton>
+        <endButton>
+          <Button text="Cancelar" press=".onCancelItemEvidence"/>
+        </endButton>
+      </Dialog>
+    </dependents>
+  </Page>
+</mvc:View>

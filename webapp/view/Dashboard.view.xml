@@ -1,0 +1,64 @@
+<mvc:View
+  controllerName="auditb1.controller.Dashboard"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout">
+  <Page title="Dashboard" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <headerContent>
+      <Button icon="sap-icon://excel-attachment" text="Excel historial" press=".onExportHistory"/>
+      <Button icon="sap-icon://refresh" press=".onRefresh"/>
+    </headerContent>
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <l:Grid defaultSpan="XL3 L3 M6 S12" class="sapUiTinyMarginBottom">
+          <GenericTile class="sapUiTinyMarginBottom" header="Hoy" subheader="Auditorías del día">
+            <TileContent>
+              <NumericContent value="{/data/today}" withMargins="false"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile class="sapUiTinyMarginBottom" header="% Aprobadas" subheader="Dictamen APROBADO">
+            <TileContent>
+              <NumericContent value="{/data/pct_approved}" scale="%" withMargins="false" valueColor="Good"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile class="sapUiTinyMarginBottom" header="Pend. SAP" subheader="Envíos fallidos/pendientes"
+                       press=".onGoHistoryPendingSap">
+            <TileContent>
+              <NumericContent value="{/data/pending_sap}" withMargins="false" valueColor="Critical"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile class="sapUiTinyMarginBottom" header="Por aprobar" subheader="Esperan supervisor"
+                       press=".onGoApprovals">
+            <TileContent>
+              <NumericContent value="{/data/pending_approval}" withMargins="false" valueColor="Neutral"/>
+            </TileContent>
+          </GenericTile>
+        </l:Grid>
+
+        <ObjectStatus class="sapUiSmallMarginBottom"
+          text="{= 'Con diferencias históricas: ' + ${/data/with_differences} }"
+          state="Warning"/>
+
+        <Panel headerText="Últimas auditorías" class="sapUiSmallMarginTop">
+          <List items="{/data/recent}" itemPress=".onOpenRecent">
+            <StandardListItem
+              title="{audit_code}"
+              description="{= ${warehouse_name} + ' · ' + ${auditor_name} }"
+              info="{verdict}"
+              infoState="{= ${verdict} === 'APROBADO' ? 'Success' : (${verdict} === 'RECHAZADO' ? 'Error' : 'Warning') }"
+              type="Navigation"
+              press=".onOpenRecent"/>
+          </List>
+        </Panel>
+
+        <Panel headerText="Actividad 14 días" class="sapUiSmallMarginTop">
+          <List items="{/data/by_day}">
+            <StandardListItem title="{d}" info="{c}" infoState="Information"/>
+          </List>
+        </Panel>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

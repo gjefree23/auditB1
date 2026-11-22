@@ -1,0 +1,99 @@
+<mvc:View
+  controllerName="auditb1.controller.Home"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout">
+  <Page title="Portal de Auditoría" showNavButton="false">
+    <customHeader>
+      <OverflowToolbar>
+        <Image id="imgLogo" height="32px" densityAware="false" class="auditHeaderLogo sapUiTinyMarginBegin"/>
+        <Title text="Portal Auditoría Almacén"/>
+        <ToolbarSpacer/>
+        <ObjectStatus
+          text="{= ${session>/simulationMode} ? 'Modo Simulación' : 'SAP Conectado' }"
+          state="{= ${session>/simulationMode} ? 'Warning' : 'Success' }"
+          class="sapUiTinyMarginEnd"/>
+        <Text text="{session>/user/full_name}" class="sapUiTinyMarginEnd"/>
+        <Button icon="sap-icon://log" tooltip="Cerrar sesión" press=".onLogout"/>
+      </OverflowToolbar>
+    </customHeader>
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <core:HTML
+          visible="{session>/simulationMode}"
+          content='&lt;div class="auditSimBanner"&gt;Modo simulación activo: los conteos y almacenes son datos de demo. Solo el resultado final se enviará a SAP cuando desactive la simulación.&lt;/div&gt;'/>
+        <Title text="¿Qué desea hacer?" level="H3" class="sapUiSmallMarginBottom"/>
+        <l:HorizontalLayout allowWrapping="true" class="sapUiTinyMarginTop">
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Nueva auditoría"
+            subheader="Validar conteo de almacén"
+            press=".onNavAudit">
+            <TileContent>
+              <ImageContent src="sap-icon://inspection"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Historial"
+            subheader="Consultar actas y PDF"
+            press=".onNavHistory">
+            <TileContent>
+              <ImageContent src="sap-icon://history"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Dashboard"
+            subheader="KPIs y export Excel"
+            press=".onNavDashboard">
+            <TileContent>
+              <ImageContent src="sap-icon://business-objects-experience"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Aprobaciones"
+            subheader="Doble validación supervisor"
+            press=".onNavApprovals"
+            visible="{session>/isSupervisor}">
+            <TileContent>
+              <ImageContent src="sap-icon://approvals"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Checklist"
+            subheader="Plantillas por bodega"
+            press=".onNavChecklist"
+            visible="{session>/isAdmin}">
+            <TileContent>
+              <ImageContent src="sap-icon://checklist-item"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Usuarios"
+            subheader="Administrar accesos"
+            press=".onNavUsers"
+            visible="{session>/isAdmin}">
+            <TileContent>
+              <ImageContent src="sap-icon://employee"/>
+            </TileContent>
+          </GenericTile>
+          <GenericTile
+            class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+            header="Configuración SAP"
+            subheader="Service Layer / simulación"
+            press=".onNavSap"
+            visible="{session>/isAdmin}">
+            <TileContent>
+              <ImageContent src="sap-icon://connected"/>
+            </TileContent>
+          </GenericTile>
+        </l:HorizontalLayout>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

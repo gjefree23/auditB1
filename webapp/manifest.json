@@ -1,0 +1,173 @@
+{
+  "_version": "1.49.0",
+  "sap.app": {
+    "id": "auditb1",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://inspection",
+      "favIcon": "img/icon-192.png"
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "auditb1.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {}
+      }
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "auditb1.i18n.i18n"
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "auditb1.view",
+        "controlId": "app",
+        "controlAggregation": "pages",
+        "async": true,
+        "bypassed": {
+          "target": "login"
+        }
+      },
+      "routes": [
+        {
+          "pattern": "",
+          "name": "login",
+          "target": "login"
+        },
+        {
+          "pattern": "home",
+          "name": "home",
+          "target": "home"
+        },
+        {
+          "pattern": "audit",
+          "name": "audit",
+          "target": "audit"
+        },
+        {
+          "pattern": "history",
+          "name": "history",
+          "target": "history"
+        },
+        {
+          "pattern": "history/{id}",
+          "name": "auditDetail",
+          "target": "auditDetail"
+        },
+        {
+          "pattern": "users",
+          "name": "users",
+          "target": "users"
+        },
+        {
+          "pattern": "sapconfig",
+          "name": "sapconfig",
+          "target": "sapconfig"
+        },
+        {
+          "pattern": "dashboard",
+          "name": "dashboard",
+          "target": "dashboard"
+        },
+        {
+          "pattern": "approvals",
+          "name": "approvals",
+          "target": "approvals"
+        },
+        {
+          "pattern": "checklist",
+          "name": "checklist",
+          "target": "checklist"
+        }
+      ],
+      "targets": {
+        "login": {
+          "viewId": "login",
+          "viewName": "Login",
+          "viewLevel": 0
+        },
+        "home": {
+          "viewId": "home",
+          "viewName": "Home",
+          "viewLevel": 1
+        },
+        "audit": {
+          "viewId": "audit",
+          "viewName": "AuditWizard",
+          "viewLevel": 2
+        },
+        "history": {
+          "viewId": "history",
+          "viewName": "History",
+          "viewLevel": 2
+        },
+        "auditDetail": {
+          "viewId": "auditDetail",
+          "viewName": "AuditDetail",
+          "viewLevel": 3
+        },
+        "users": {
+          "viewId": "users",
+          "viewName": "Users",
+          "viewLevel": 2
+        },
+        "sapconfig": {
+          "viewId": "sapconfig",
+          "viewName": "SapConfig",
+          "viewLevel": 2
+        },
+        "dashboard": {
+          "viewId": "dashboard",
+          "viewName": "Dashboard",
+          "viewLevel": 2
+        },
+        "approvals": {
+          "viewId": "approvals",
+          "viewName": "Approvals",
+          "viewLevel": 2
+        },
+        "checklist": {
+          "viewId": "checklist",
+          "viewName": "ChecklistAdmin",
+          "viewLevel": 2
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    }
+  }
+}

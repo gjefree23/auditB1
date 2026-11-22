@@ -1,0 +1,95 @@
+<mvc:View
+  controllerName="auditb1.controller.ChecklistAdmin"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <Page title="Plantillas de checklist" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <headerContent>
+      <Button text="Nueva plantilla" icon="sap-icon://add" type="Emphasized" press=".onAdd"/>
+    </headerContent>
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <Text text="Defina las preguntas que el auditor debe responder por bodega. Si una bodega no tiene plantilla propia, se usa la GENERAL."
+              class="sapUiTinyMarginBottom"/>
+        <Table items="{/templates}" sticky="ColumnHeaders" noDataText="No hay plantillas">
+          <columns>
+            <Column><Text text="Nombre"/></Column>
+            <Column width="7rem" minScreenWidth="Tablet" demandPopin="true"><Text text="Almacén"/></Column>
+            <Column width="7rem" minScreenWidth="Tablet" demandPopin="true"><Text text="Tipo"/></Column>
+            <Column width="5rem" hAlign="Center"><Text text="Preg."/></Column>
+            <Column width="6rem" hAlign="Center"><Text text="Activa"/></Column>
+            <Column width="9rem" hAlign="End"><Text text="Acciones"/></Column>
+          </columns>
+          <items>
+            <ColumnListItem>
+              <cells>
+                <Text text="{name}"/>
+                <Text text="{= ${warehouse_code} ? ${warehouse_code} : 'Todas' }"/>
+                <Text text="{warehouse_type}"/>
+                <ObjectStatus text="{item_count}" state="Information"/>
+                <Switch state="{= ${active} === 1 }" change=".onToggle"/>
+                <HBox justifyContent="End">
+                  <Button icon="sap-icon://edit" tooltip="Editar" press=".onEdit" type="Transparent"/>
+                  <Button icon="sap-icon://delete" tooltip="Eliminar" press=".onDelete" type="Transparent"/>
+                </HBox>
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+      </VBox>
+    </content>
+
+    <dependents>
+      <Dialog id="tplDialog" title="{/dialogTitle}" stretchOnPhone="true" contentWidth="36rem">
+        <content>
+          <VBox class="sapUiSmallMargin">
+            <Label text="Nombre" required="true"/>
+            <Input value="{/edit/name}" maxLength="120"/>
+            <Label text="Código almacén (vacío = general / todas)" class="sapUiTinyMarginTop"/>
+            <Input value="{/edit/warehouse_code}" placeholder="Ej. 01, 02…" maxLength="20"/>
+            <Label text="Tipo" class="sapUiTinyMarginTop"/>
+            <Select selectedKey="{/edit/warehouse_type}" width="100%">
+              <core:Item key="GENERAL" text="GENERAL"/>
+              <core:Item key="MATERIAS" text="MATERIAS"/>
+              <core:Item key="TERMINADO" text="TERMINADO"/>
+              <core:Item key="OTRO" text="OTRO"/>
+            </Select>
+            <CheckBox text="Plantilla activa" selected="{= ${/edit/active} === 1 }" select=".onActiveCheck"
+                      class="sapUiTinyMarginTop"/>
+
+            <HBox alignItems="Center" justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
+              <Title text="Preguntas" level="H5"/>
+              <Button text="Agregar" icon="sap-icon://add" type="Emphasized" press=".onAddQuestion"/>
+            </HBox>
+            <Table items="{/edit/items}" growing="true" growingThreshold="30"
+                   noDataText="Agregue al menos una pregunta">
+              <columns>
+                <Column width="3rem"><Text text="#"/></Column>
+                <Column><Text text="Pregunta"/></Column>
+                <Column width="6rem" hAlign="Center"><Text text="Oblig."/></Column>
+                <Column width="3rem" hAlign="Center"><Text text=""/></Column>
+              </columns>
+              <items>
+                <ColumnListItem>
+                  <cells>
+                    <Input value="{sort_order}" type="Number" width="100%"/>
+                    <Input value="{question}" width="100%"/>
+                    <CheckBox selected="{= ${required} === 1 }" select=".onRequiredCheck"/>
+                    <Button icon="sap-icon://decline" type="Transparent" press=".onRemoveQuestion"/>
+                  </cells>
+                </ColumnListItem>
+              </items>
+            </Table>
+          </VBox>
+        </content>
+        <beginButton>
+          <Button text="Guardar" type="Emphasized" press=".onSave"/>
+        </beginButton>
+        <endButton>
+          <Button text="Cancelar" press=".onCancel"/>
+        </endButton>
+      </Dialog>
+    </dependents>
+  </Page>
+</mvc:View>

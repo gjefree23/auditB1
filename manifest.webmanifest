@@ -1,0 +1,24 @@
+{
+  "name": "Audit B1 — Auditoría Empresarial",
+  "short_name": "Audit B1",
+  "description": "Auditoría y validación de conteo de almacén para SAP Business One",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f6f7",
+  "theme_color": "#0073CF",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "webapp/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "webapp/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

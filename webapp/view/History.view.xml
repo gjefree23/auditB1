@@ -1,0 +1,100 @@
+<mvc:View
+  controllerName="auditb1.controller.History"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout">
+  <Page id="historyPage" title="Historial de auditorías" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0" class="auditHistoryPage">
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <!-- Filtros -->
+        <Panel expandable="true" expanded="true" class="auditFilterPanel sapUiTinyMarginBottom">
+          <headerToolbar>
+            <OverflowToolbar>
+              <Title text="Filtros" level="H5"/>
+              <ToolbarSpacer/>
+              <Button text="Excel" icon="sap-icon://excel-attachment" press=".onExportExcel" type="Emphasized"/>
+              <Button text="Limpiar" type="Transparent" press=".onClearFilters"/>
+              <Button icon="sap-icon://refresh" tooltip="Actualizar" press=".onRefresh"/>
+            </OverflowToolbar>
+          </headerToolbar>
+          <l:Grid defaultSpan="XL3 L3 M6 S12" class="sapUiTinyMargin">
+            <SearchField placeholder="Buscar código, auditor, almacén…" value="{/filter/q}"
+                         search=".onFilter" liveChange=".onFilterLive"/>
+            <Input placeholder="Almacén (código o nombre)" value="{/filter/warehouse}"
+                   submit=".onFilter" change=".onFilter"/>
+            <Select selectedKey="{/filter/verdict}" change=".onFilter" forceSelection="false" width="100%">
+              <core:Item key="" text="Dictamen (todos)"/>
+              <core:Item key="APROBADO" text="APROBADO"/>
+              <core:Item key="CON_OBSERVACION" text="CON OBSERVACIÓN"/>
+              <core:Item key="RECHAZADO" text="RECHAZADO"/>
+            </Select>
+            <Select selectedKey="{/filter/sap_status}" change=".onFilter" forceSelection="false" width="100%">
+              <core:Item key="" text="Estado SAP (todos)"/>
+              <core:Item key="ENVIADO_SAP" text="ENVIADO_SAP"/>
+              <core:Item key="PENDIENTE_SAP" text="PENDIENTE_SAP"/>
+              <core:Item key="SIMULADO" text="SIMULADO"/>
+              <core:Item key="NO_APLICA" text="NO_APLICA"/>
+            </Select>
+            <DatePicker value="{/filter/from}" placeholder="Desde" change=".onFilter" width="100%"
+                        valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
+            <DatePicker value="{/filter/to}" placeholder="Hasta" change=".onFilter" width="100%"
+                        valueFormat="yyyy-MM-dd" displayFormat="dd/MM/yyyy"/>
+          </l:Grid>
+        </Panel>
+
+        <!-- Resumen -->
+        <HBox class="auditHistorySummary sapUiTinyMarginBottom" wrap="Wrap" alignItems="Center">
+          <ObjectStatus class="sapUiTinyMarginEnd"
+            title="Resultados"
+            text="{= (${/audits} || []).length + ' auditorías' }"
+            state="Information"/>
+          <ObjectStatus class="sapUiTinyMarginEnd"
+            text="{= ${/stats/withDiff} + ' con diferencias' }"
+            state="Warning"
+            visible="{= ${/stats/withDiff} > 0 }"/>
+        </HBox>
+
+        <!-- Lista tipo tarjeta -->
+        <List id="historyList"
+              items="{/audits}"
+              mode="SingleSelectMaster"
+              itemPress=".onItemPress"
+              growing="true"
+              growingThreshold="20"
+              noDataText="No hay auditorías con estos filtros">
+          <CustomListItem type="Navigation" press=".onItemPress" class="auditHistoryCard">
+            <HBox class="sapUiSmallMargin" alignItems="Start" justifyContent="SpaceBetween" wrap="Wrap" width="100%">
+              <VBox class="sapUiSmallMarginEnd auditHistoryMeta">
+                <Title text="{audit_code}" level="H5"/>
+                <ObjectIdentifier
+                  title="{warehouse_name}"
+                  text="{= ${warehouse_code} + (${counting_doc_entry} > 0 ? (' · Doc ' + ${counting_doc_num}) : ' · Conteo libre') }"/>
+                <Text text="{= 'Auditor: ' + ${auditor_name} }" class="sapUiTinyMarginTop"/>
+                <Text text="{created_at}" class="sapUiTinyMarginTop auditMuted"/>
+              </VBox>
+              <VBox alignItems="End" class="sapUiTinyMarginBegin auditHistoryStatus">
+                <ObjectStatus
+                  text="{= ${verdict} === 'CON_OBSERVACION' ? 'Con observación' : (${verdict} === 'APROBADO' ? 'Aprobado' : (${verdict} === 'RECHAZADO' ? 'Rechazado' : ${verdict})) }"
+                  class="sapUiTinyMarginBottom"
+                  state="{= ${verdict} === 'APROBADO' ? 'Success' : (${verdict} === 'RECHAZADO' ? 'Error' : 'Warning') }"/>
+                <ObjectStatus
+                  text="{= ${sap_status} === 'SIMULADO' ? 'Simulado' : (${sap_status} === 'ENVIADO_SAP' ? 'Enviado SAP' : (${sap_status} === 'PENDIENTE_SAP' ? 'Pendiente SAP' : (${sap_status} === 'NO_APLICA' ? 'No aplica' : ${sap_status}))) }"
+                  class="sapUiTinyMarginBottom"
+                  state="{= ${sap_status} === 'ENVIADO_SAP' ? 'Success' : (${sap_status} === 'PENDIENTE_SAP' ? 'Error' : 'Warning') }"/>
+                <HBox alignItems="Center" class="sapUiTinyMarginBottom" wrap="Wrap">
+                  <ObjectStatus text="{= ${item_count} + ' ítems' }" state="Information" class="sapUiTinyMarginEnd"/>
+                  <ObjectStatus text="{= ${diff_count} + ' dif.' }" state="Error"
+                                visible="{= ${diff_count} > 0 }"/>
+                </HBox>
+                <Button icon="sap-icon://pdf-attachment" text="PDF" type="Transparent"
+                        press=".onDownloadPdf" tooltip="Descargar acta PDF"/>
+              </VBox>
+            </HBox>
+          </CustomListItem>
+        </List>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

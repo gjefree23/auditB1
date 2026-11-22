@@ -1,0 +1,45 @@
+<mvc:View
+  controllerName="auditb1.controller.SapConfig"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.ui.layout.form">
+  <Page title="Configuración SAP B1 Service Layer" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <content>
+      <VBox class="sapUiResponsiveMargin">
+        <MessageStrip
+          text="Solo el administrador configura la conexión. En modo simulación el portal usa datos demo y no llama a SAP."
+          type="Information" showIcon="true" class="sapUiSmallMarginBottom"/>
+
+        <f:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="4" labelSpanL="4"
+                      labelSpanM="4" labelSpanS="12" emptySpanXL="0" columnsXL="1" columnsL="1">
+          <f:content>
+            <Label text="Service Layer URL"/>
+            <Input value="{/config/sl_url}" placeholder="https://servidor:50000/b1s/v1"/>
+
+            <Label text="Company DB"/>
+            <Input value="{/config/company_db}" placeholder="SBODEMOCL"/>
+
+            <Label text="Usuario SAP"/>
+            <Input value="{/config/sl_user}" placeholder="manager"/>
+
+            <Label text="Contraseña SAP"/>
+            <Input value="{/config/sl_password}" type="Password"
+                   placeholder="{= ${/config/has_password} ? '•••••••• (dejar vacío para no cambiar)' : 'Contraseña' }"/>
+
+            <Label text="Modo simulación / offline"/>
+            <Switch state="{= ${/config/simulation_mode} === 1 }" change=".onSimChange"/>
+          </f:content>
+        </f:SimpleForm>
+
+        <HBox class="sapUiSmallMarginTop" wrap="Wrap">
+          <Button text="Probar conexión" icon="sap-icon://connected" press=".onTest"
+                  class="sapUiTinyMarginEnd" type="Attention"/>
+          <Button text="Guardar" icon="sap-icon://save" type="Emphasized" press=".onSave"/>
+        </HBox>
+
+        <Text text="{/testResult}" class="sapUiSmallMarginTop" wrapping="true"/>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

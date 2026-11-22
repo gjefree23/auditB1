@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0073CF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Portal de Auditoría y Validación de Conteo de Almacén para SAP Business One">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="webapp/img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="webapp/img/icon-192.png">
+  <title>Audit B1 — Auditoría Empresarial</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: #f5f6f7; }
+    #busySplash {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; font-family: "72","Segoe UI",sans-serif; color: #1A3A5F; z-index: 9999;
+      background: linear-gradient(160deg, #e8f1fb 0%, #f5f6f7 45%, #fff 100%);
+    }
+    #busySplash .logo {
+      width: min(280px, 72vw); height: auto; margin-bottom: 12px;
+      filter: drop-shadow(0 8px 24px rgba(0,115,207,.22));
+    }
+    #busySplash .spin {
+      width: 28px; height: 28px; border: 3px solid #cce0ff; border-top-color: #0073CF;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <script
+    id="sap-ui-bootstrap"
+    src="https://sdk.openui5.org/resources/sap-ui-core.js"
+    data-sap-ui-theme="sap_horizon"
+    data-sap-ui-libs="sap.m,sap.ui.layout,sap.ui.core"
+    data-sap-ui-compatVersion="edge"
+    data-sap-ui-async="true"
+    data-sap-ui-resourceroots='{"auditb1": "./webapp/"}'
+    data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+    data-sap-ui-xx-waitForTheme="true">
+  </script>
+</head>
+<body class="sapUiBody" id="content">
+  <div id="busySplash">
+    <img class="logo" src="webapp/img/logo.png" alt="Audit B1">
+    <div>Portal de Auditoría de Almacén</div>
+    <div class="spin"></div>
+  </div>
+  <div
+    data-sap-ui-component
+    data-name="auditb1"
+    data-id="container"
+    data-settings='{"id":"auditb1"}'
+    data-handle-validation="true">
+  </div>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js").catch(function () {});
+      });
+    }
+    sap.ui.getCore().attachInit(function () {
+      var el = document.getElementById("busySplash");
+      if (el) { el.style.display = "none"; }
+    });
+  </script>
+</body>
+</html>

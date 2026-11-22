@@ -1,0 +1,33 @@
+<mvc:View
+  controllerName="auditb1.controller.Login"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  displayBlock="true">
+  <Page showHeader="false" class="auditLoginBg" backgroundDesign="Transparent">
+    <content>
+      <VBox alignItems="Center" justifyContent="Center" class="sapUiLargeMarginTop">
+        <Panel class="auditHeroCard sapUiResponsiveMargin" width="auto">
+          <headerToolbar>
+            <OverflowToolbar>
+              <Title text="Audit B1"/>
+            </OverflowToolbar>
+          </headerToolbar>
+          <VBox class="sapUiSmallMargin" alignItems="Center">
+            <Image id="imgLogo" width="220px" densityAware="false" class="auditBrandLogo sapUiSmallMarginBottom"/>
+            <Title text="Validación de Conteo de Almacén" level="H3" class="sapUiTinyMarginBottom"/>
+            <Text text="SAP Business One — Service Layer" class="sapUiSmallMarginBottom"/>
+            <Input id="inpUser" placeholder="Usuario" width="100%" class="sapUiTinyMarginBottom"
+                   value="{/username}" submit=".onLogin"/>
+            <Input id="inpPass" type="Password" placeholder="Contraseña" width="100%"
+                   value="{/password}" submit=".onLogin"/>
+            <Button text="Entrar" type="Emphasized" width="100%" press=".onLogin"
+                    class="sapUiSmallMarginTop" busy="{/busy}"/>
+            <Text text="Demo: admin / Admin123!  ·  auditor / Admin123!"
+                  class="sapUiSmallMarginTop" wrapping="true"/>
+          </VBox>
+        </Panel>
+      </VBox>
+    </content>
+  </Page>
+</mvc:View>

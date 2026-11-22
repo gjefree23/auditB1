@@ -1,0 +1,32 @@
+# Dependencias / vendor
+/vendor/
+/composer.lock
+
+# Uploads generados (fotos, firmas, PDFs)
+/uploads/fotos/*
+/uploads/actas/*
+!/uploads/fotos/.gitkeep
+!/uploads/actas/.gitkeep
+
+# Entorno / secretos locales
+.env
+.env.*
+!.env.example
+api/config.local.php
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs / temporales
+*.log
+*.tmp
+/tmp/
+/lib/_tmp/
+
+# Caché / build
+node_modules/

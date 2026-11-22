@@ -1,0 +1,177 @@
+<mvc:View
+  controllerName="auditb1.controller.AuditDetail"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <Page title="Detalle de auditoría" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <content>
+      <VBox class="sapUiResponsiveMargin" visible="{= !!${/audit} }">
+        <ObjectHeader
+          title="{/audit/audit_code}"
+          number="{/audit/verdict}"
+          numberState="{= ${/audit/verdict} === 'APROBADO' ? 'Success' : (${/audit/verdict} === 'RECHAZADO' ? 'Error' : 'Warning') }"
+          responsive="true">
+          <attributes>
+            <ObjectAttribute title="Almacén" text="{/audit/warehouse_code} — {/audit/warehouse_name}"/>
+            <ObjectAttribute title="Conteo" text="{= ${/audit/counting_doc_entry} > 0 ? ('DocEntry ' + ${/audit/counting_doc_entry} + ' / DocNum ' + ${/audit/counting_doc_num}) : 'Sin documento (conteo libre)' }"/>
+            <ObjectAttribute title="Auditor" text="{/audit/auditor_name}"/>
+            <ObjectAttribute title="Fecha" text="{/audit/created_at}"/>
+          </attributes>
+          <statuses>
+            <ObjectStatus
+              title="SAP"
+              text="{/audit/sap_status}"
+              state="{= ${/audit/sap_status} === 'ENVIADO_SAP' ? 'Success' : (${/audit/sap_status} === 'PENDIENTE_SAP' ? 'Error' : 'Warning') }"/>
+            <ObjectStatus
+              title="Aprobación"
+              text="{/audit/approval_status}"
+              state="{= ${/audit/approval_status} === 'APROBADA' ? 'Success' : (${/audit/approval_status} === 'RECHAZADA' ? 'Error' : 'Warning') }"/>
+          </statuses>
+        </ObjectHeader>
+
+        <MessageStrip
+          visible="{= ${/audit/approval_status} === 'PENDIENTE' &amp;&amp; ${session>/isSupervisor} }"
+          text="Esta acta espera su aprobación de supervisor."
+          type="Warning" showIcon="true" class="sapUiTinyMarginTop"/>
+
+        <Panel headerText="Observación general" class="sapUiTinyMarginTop">
+          <Text text="{= ${/audit/observation_note} || 'Sin observaciones' }"/>
+        </Panel>
+
+        <Panel headerText="Checklist de bodega" class="sapUiTinyMarginTop"
+               visible="{= (${/audit/checklist} || []).length > 0 }">
+          <List items="{/audit/checklist}">
+            <StandardListItem
+              title="{question}"
+              info="{answer}"
+              description="{comment}"
+              infoState="{= ${answer} === 'SI' ? 'Success' : (${answer} === 'NO' ? 'Error' : 'None') }"/>
+          </List>
+        </Panel>
+
+        <Table id="itemsTable" items="{/audit/items}" class="sapUiSmallMarginTop" sticky="ColumnHeaders" growing="true">
+          <headerToolbar>
+            <OverflowToolbar>
+              <Title text="Ítems y evidencias"/>
+              <ToolbarSpacer/>
+              <ObjectStatus
+                text="{= 'Merma total: ' + ${/totalMermaValue} }"
+                state="{= ${/totalMermaValue} > 0 ? 'Error' : 'Success' }"
+                class="sapUiTinyMarginEnd"/>
+              <SearchField width="14rem" placeholder="Filtrar ítems…" liveChange=".onFilterItems"/>
+            </OverflowToolbar>
+          </headerToolbar>
+          <columns>
+            <Column width="16rem"><Text text="Artículo"/></Column>
+            <Column width="7rem" minScreenWidth="Tablet" demandPopin="true"><Text text="Barcode"/></Column>
+            <Column width="4.5rem" hAlign="End"><Text text="Sist."/></Column>
+            <Column width="4.5rem" hAlign="End"><Text text="Cont."/></Column>
+            <Column width="4rem" hAlign="End"><Text text="Dif."/></Column>
+            <Column width="5rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="Costo"/></Column>
+            <Column width="5rem" hAlign="End" minScreenWidth="Desktop" demandPopin="true"><Text text="Merma"/></Column>
+            <Column width="6rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="$ Merma"/></Column>
+            <Column width="6rem"><Text text="Estado"/></Column>
+            <Column minScreenWidth="Phone" demandPopin="true"><Text text="Comentario"/></Column>
+            <Column width="6rem" hAlign="Center"><Text text="Foto"/></Column>
+          </columns>
+          <items>
+            <ColumnListItem>
+              <cells>
+                <VBox>
+                  <ObjectIdentifier title="{item_name}" text="{item_code}"/>
+                  <Link text="Ver tendencia" press=".onItemTrend" class="sapUiTinyMarginTop"/>
+                </VBox>
+                <Text text="{= ${barcode} || '—' }"/>
+                <Text text="{system_qty}"/>
+                <Text text="{counted_qty}"/>
+                <Text text="{difference_qty}"/>
+                <Text text="{unit_cost}"/>
+                <ObjectNumber number="{merma_qty}" state="Error" visible="{= ${merma_qty} > 0 }"/>
+                <ObjectNumber number="{merma_value}" unit="USD" state="Error" visible="{= ${merma_value} > 0 }"/>
+                <ObjectStatus text="{status}" state="{= ${status} === 'OK' ? 'Success' : 'Error' }"/>
+                <Text text="{= ${notes} || '—' }" wrapping="true"/>
+                <HBox justifyContent="Center">
+                  <Image src="{photo_path}" width="48px" height="48px" densityAware="false"
+                         visible="{= !!${photo_path} }" press=".onOpenItemPhoto"
+                         class="sapUiTinyMarginEnd"/>
+                  <Text text="—" visible="{= !${photo_path} }"/>
+                </HBox>
+              </cells>
+            </ColumnListItem>
+          </items>
+        </Table>
+
+        <HBox class="sapUiSmallMarginTop" wrap="Wrap">
+          <VBox class="sapUiSmallMarginEnd" visible="{= !!${/audit/photo_annotated_path} || !!${/audit/photo_path} }">
+            <Label text="Evidencia general"/>
+            <Image src="{/photoUrl}" width="280px" densityAware="false"/>
+          </VBox>
+          <VBox visible="{= !!${/audit/signature_path} }">
+            <Label text="Firma"/>
+            <Image src="{/signUrl}" width="200px" densityAware="false"/>
+          </VBox>
+        </HBox>
+      </VBox>
+    </content>
+    <footer>
+      <OverflowToolbar>
+        <Button text="Aprobar" type="Accept" press=".onApprove"
+                visible="{= ${/audit/approval_status} === 'PENDIENTE' &amp;&amp; ${session>/isSupervisor} }"/>
+        <Button text="Rechazar" type="Reject" press=".onReject"
+                visible="{= ${/audit/approval_status} === 'PENDIENTE' &amp;&amp; ${session>/isSupervisor} }"/>
+        <Button text="Reintentar SAP" icon="sap-icon://synchronize"
+                visible="{= ${/audit/sap_status} === 'PENDIENTE_SAP' &amp;&amp; ${/audit/approval_status} === 'APROBADA' }"
+                press=".onRetrySap" type="Attention"/>
+        <ToolbarSpacer/>
+        <Button text="Excel" icon="sap-icon://excel-attachment" press=".onExportExcel"/>
+        <Button text="PDF" icon="sap-icon://pdf-attachment" type="Emphasized" press=".onDownloadPdf"/>
+      </OverflowToolbar>
+    </footer>
+
+    <dependents>
+      <Dialog id="itemPhotoDialog" title="Foto del ítem" stretchOnPhone="true">
+        <content>
+          <VBox class="sapUiSmallMargin" alignItems="Center">
+            <Text text="{/itemPhotoTitle}" class="sapUiTinyMarginBottom"/>
+            <Image src="{/itemPhotoUrl}" width="100%" densityAware="false"/>
+            <Text text="{/itemPhotoNotes}" wrapping="true" class="sapUiSmallMarginTop"/>
+          </VBox>
+        </content>
+        <endButton>
+          <Button text="Cerrar" press=".onCloseItemPhoto"/>
+        </endButton>
+      </Dialog>
+      <Dialog id="trendDialog" title="Comparativo histórico" stretchOnPhone="true" contentWidth="40rem">
+        <content>
+          <Table items="{/trend}" growing="true" class="sapUiTinyMargin">
+            <columns>
+              <Column><Text text="Acta"/></Column>
+              <Column><Text text="Fecha"/></Column>
+              <Column hAlign="End"><Text text="Sist."/></Column>
+              <Column hAlign="End"><Text text="Cont."/></Column>
+              <Column hAlign="End"><Text text="Dif."/></Column>
+              <Column><Text text="Estado"/></Column>
+            </columns>
+            <items>
+              <ColumnListItem>
+                <cells>
+                  <Text text="{audit_code}"/>
+                  <Text text="{created_at}"/>
+                  <Text text="{system_qty}"/>
+                  <Text text="{counted_qty}"/>
+                  <ObjectNumber number="{difference_qty}"
+                    state="{= ${status} === 'OK' ? 'Success' : 'Error' }"/>
+                  <ObjectStatus text="{status}" state="{= ${status} === 'OK' ? 'Success' : 'Error' }"/>
+                </cells>
+              </ColumnListItem>
+            </items>
+          </Table>
+        </content>
+        <endButton>
+          <Button text="Cerrar" press=".onCloseTrend"/>
+        </endButton>
+      </Dialog>
+    </dependents>
+  </Page>
+</mvc:View>

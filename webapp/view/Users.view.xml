@@ -1,0 +1,66 @@
+<mvc:View
+  controllerName="auditb1.controller.Users"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <Page title="Usuarios del portal" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <headerContent>
+      <Button text="Nuevo usuario" icon="sap-icon://add" type="Emphasized" press=".onAdd"/>
+    </headerContent>
+    <content>
+      <Table items="{/users}" sticky="ColumnHeaders" class="sapUiResponsiveMargin">
+        <columns>
+          <Column width="8rem"><Text text="Usuario"/></Column>
+          <Column><Text text="Nombre"/></Column>
+          <Column width="10rem" minScreenWidth="Tablet" demandPopin="true"><Text text="Email"/></Column>
+          <Column width="7rem"><Text text="Rol"/></Column>
+          <Column width="6rem"><Text text="Activo"/></Column>
+          <Column width="8rem" hAlign="End"><Text text="Acciones"/></Column>
+        </columns>
+        <items>
+          <ColumnListItem>
+            <cells>
+              <Text text="{username}"/>
+              <Text text="{full_name}"/>
+              <Text text="{email}"/>
+              <ObjectStatus text="{role}" state="{= ${role} === 'ADMIN' ? 'Information' : 'None' }"/>
+              <Switch state="{= ${active} === 1 }" change=".onToggle"/>
+              <Button icon="sap-icon://edit" press=".onEdit" type="Transparent"/>
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+    </content>
+
+    <dependents>
+      <Dialog id="userDialog" title="{/dialogTitle}" stretchOnPhone="true">
+        <content>
+          <VBox class="sapUiSmallMargin">
+            <Label text="Usuario" required="true"/>
+            <Input value="{/edit/username}" editable="{= !${/edit/id} }"/>
+            <Label text="Nombre completo" required="true" class="sapUiTinyMarginTop"/>
+            <Input value="{/edit/full_name}"/>
+            <Label text="Email" class="sapUiTinyMarginTop"/>
+            <Input value="{/edit/email}" type="Email"/>
+            <Label text="Rol" class="sapUiTinyMarginTop"/>
+            <Select selectedKey="{/edit/role}" width="100%">
+              <core:Item key="AUDITOR" text="AUDITOR"/>
+              <core:Item key="SUPERVISOR" text="SUPERVISOR"/>
+              <core:Item key="ADMIN" text="ADMIN"/>
+            </Select>
+            <Label text="{= ${/edit/id} ? 'Nueva contraseña (opcional)' : 'Contraseña' }" class="sapUiTinyMarginTop"/>
+            <Input value="{/edit/password}" type="Password"/>
+            <CheckBox text="Activo" selected="{= ${/edit/active} === 1 }" select=".onActiveCheck"/>
+          </VBox>
+        </content>
+        <beginButton>
+          <Button text="Guardar" type="Emphasized" press=".onSave"/>
+        </beginButton>
+        <endButton>
+          <Button text="Cancelar" press=".onCancel"/>
+        </endButton>
+      </Dialog>
+    </dependents>
+  </Page>
+</mvc:View>

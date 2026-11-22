@@ -1,0 +1,150 @@
+/* Portal Auditoría Almacén B1 */
+
+.auditLoginBg {
+  min-height: 100%;
+  background: linear-gradient(155deg, #dbeafe 0%, #f8fafc 40%, #e0f2fe 100%);
+}
+
+.auditHeroCard {
+  max-width: 420px;
+  margin: 2rem auto;
+  border-radius: 1rem !important;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12) !important;
+}
+
+.auditBrandBadge {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #0073CF;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.auditBrandLogo {
+  max-width: 240px;
+  height: auto;
+  display: block;
+}
+
+.auditHeaderLogo {
+  height: 36px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.auditCanvasWrap {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.auditCanvasWrap canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.auditSignWrap {
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  background: #fff;
+  max-width: 480px;
+  margin: 0 auto;
+  touch-action: none;
+}
+
+.auditSignWrap canvas {
+  display: block;
+  width: 100%;
+  height: 160px;
+  touch-action: none;
+}
+
+.auditStepHeader {
+  padding: 0.5rem 0 1rem;
+}
+
+.auditDiffRow {
+  background: #fff1f0 !important;
+}
+
+.auditOkState {
+  color: #107e3e;
+  font-weight: 600;
+}
+
+.auditDiffState {
+  color: #bb0000;
+  font-weight: 600;
+}
+
+.auditSimBanner {
+  background: #fff4ce;
+  border-left: 4px solid #e76500;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Historial */
+.auditHistoryPage .sapMPageBgStandard {
+  background: linear-gradient(180deg, #eef5fc 0%, #f5f6f7 28%, #f5f6f7 100%);
+}
+
+.auditFilterPanel {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06) !important;
+  background: #fff !important;
+}
+
+.auditHistorySummary {
+  padding: 0.25rem 0.15rem;
+}
+
+.auditHistoryCard {
+  margin: 0 0 0.65rem 0 !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05) !important;
+  overflow: visible;
+}
+
+.auditHistoryCard .auditHistoryMeta {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.auditHistoryCard .auditHistoryStatus {
+  flex: 0 1 auto;
+  max-width: 100%;
+  align-items: flex-end;
+}
+
+.auditHistoryCard .auditHistoryStatus .sapMObjStatusText {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.auditHistoryCard:hover {
+  border-color: #93c5fd !important;
+  box-shadow: 0 6px 18px rgba(0, 112, 242, 0.12) !important;
+}
+
+.auditMuted {
+  color: #64748b;
+  font-size: 0.85rem;
+}

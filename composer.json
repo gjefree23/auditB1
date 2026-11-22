@@ -1,0 +1,11 @@
+{
+  "name": "auditb1/portal",
+  "description": "Portal de Auditoría y Validación de Conteo de Almacén para SAP Business One",
+  "require": {
+    "php": ">=8.0",
+    "setasign/fpdf": "^1.8"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

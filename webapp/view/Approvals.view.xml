@@ -1,0 +1,33 @@
+<mvc:View
+  controllerName="auditb1.controller.Approvals"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+  <Page title="Aprobación de supervisor" showNavButton="true" navButtonPress=".onNavBack"
+        busy="{/busy}" busyIndicatorDelay="0">
+    <headerContent>
+      <Button icon="sap-icon://refresh" press=".onRefresh"/>
+    </headerContent>
+    <content>
+      <List id="approvalList" items="{/pending}" noDataText="No hay actas pendientes de aprobación"
+            class="sapUiResponsiveMargin">
+        <CustomListItem class="auditHistoryCard">
+          <HBox class="sapUiSmallMargin" justifyContent="SpaceBetween" wrap="Wrap" width="100%">
+            <VBox>
+              <Title text="{audit_code}" level="H5"/>
+              <Text text="{warehouse_code} — {warehouse_name}"/>
+              <Text text="{= 'Auditor: ' + ${auditor_name} }"/>
+              <Text text="{created_at}" class="auditMuted"/>
+              <ObjectStatus text="{verdict}" class="sapUiTinyMarginTop"
+                state="{= ${verdict} === 'APROBADO' ? 'Success' : (${verdict} === 'RECHAZADO' ? 'Error' : 'Warning') }"/>
+            </VBox>
+            <VBox>
+              <Button text="Ver detalle" type="Transparent" press=".onOpen" class="sapUiTinyMarginBottom"/>
+              <Button text="Aprobar" type="Emphasized" press=".onApprove" class="sapUiTinyMarginBottom"/>
+              <Button text="Rechazar" type="Reject" press=".onReject"/>
+            </VBox>
+          </HBox>
+        </CustomListItem>
+      </List>
+    </content>
+  </Page>
+</mvc:View>
